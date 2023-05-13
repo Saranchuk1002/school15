@@ -14,7 +14,7 @@ $statement = $db->prepare($sql);
 $statement->execute();
 $classes = $statement->fetchAll(PDO::FETCH_ASSOC);
 
-// Проверка наличия сохраненного выбранного предмета, класса и темы в сессии
+// ППроверка наличия сохраненного выбранного предмета, класса и темы в сессии
 if(isset($_SESSION['selected_subject'])) {
 $selected_subject = $_SESSION['selected_subject'];
 } else {
@@ -34,6 +34,9 @@ if(isset($_POST['subject_id']) && isset($_POST['class_id'])) {
 // сохраняем выбранный предмет, класс и тему в сессии
     $_SESSION['selected_subject'] = $subject_id;
     $_SESSION['selected_class'] = $class_id;
+    // перенаправляем пользователя на страницу создания теста
+    header("Location: create_test.php");
+    exit();
 }
 ?>
 <form method="post" action="create_test.php">

@@ -17,7 +17,7 @@
 
     $res = $db->query("SELECT * FROM tests WHERE id = {$testId}");
     $row = $res->fetch();
-    $testTitle = $row['title'];
+    $name = $row['name'];
 
     $questionNum = (int) $_POST['q'];
     if($_SESSION['email']=='' || $_SESSION['name']=='')
@@ -67,11 +67,11 @@
 
             $res = $db->query("SELECT * FROM questions WHERE test_id = {$testId} LIMIT {$questionStart}, 1");
             $row = $res->fetch();
-            $question = $row['question'];
+            $question_text = $row['question_text'];
             $questionId = $row['id'];
 
             $res = $db->query("SELECT * FROM answers WHERE question_id = {$questionId}");
-            $answers = $res->fetchAll();
+            $answer_text = $res->fetchAll();
         } else {
             $score = $_SESSION['test_score'];
 
@@ -92,9 +92,9 @@
         {
             $questionId = $row['id'];
             $res = $db->query("SELECT * FROM answers WHERE question_id = {$questionId}");
-            $answers = $res->fetchAll();
+            $answer_text = $res->fetchAll();
             $max_value=0;
-            foreach ($answers AS $answer) {
+            foreach ($answer_text AS $answer) {
                 $curr_answer_id=$answer['id'];
                 $curr_answer=$answer['answer'];
                 if($max_value<$answer['score'])
@@ -180,15 +180,15 @@
                         </div>
                         <div class="card mt-3">
                             <div class="card-header text-center" >
-                                <h3><?php echo $question; ?></h3>
+                                <h3><?php echo $question_text; ?></h3>
                             </div>
                             <div class="card-body">
                                 <?php if($questionNum!=0)
                                 {
                                     $max_value=0;
-                                    foreach ($answers AS $answer) {
+                                    foreach ($answer_text AS $answer) {
                                         $curr_answer_id=$answer['id'];
-                                        $curr_answer=$answer['answer'];
+                                        $curr_answer=$answer['answer_text'];
                                         if($max_value<$answer['score'])
                                         {
                                             $max_value=$answer['score'];
