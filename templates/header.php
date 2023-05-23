@@ -12,6 +12,7 @@
                         Вы вошли как: <?php echo $_SESSION['login_mail']; ?>
                     </button>
                     <div class="dropdown-menu" aria-labelledby="userDropdown">
+                        <a class="dropdown-item" href="results.php?logout=true">Результаты тестов</a>
                         <a class="dropdown-item" href="login.php?logout=true">Выйти</a>
                     </div>
                 </div>

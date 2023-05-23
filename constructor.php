@@ -16,14 +16,14 @@ $classes = $statement->fetchAll(PDO::FETCH_ASSOC);
 
 // ППроверка наличия сохраненного выбранного предмета, класса и темы в сессии
 if(isset($_SESSION['selected_subject'])) {
-$selected_subject = $_SESSION['selected_subject'];
+    $selected_subject = $_SESSION['selected_subject'];
 } else {
-$selected_subject = null;
+    $selected_subject = null;
 }
 if(isset($_SESSION['selected_class'])) {
-$selected_class = $_SESSION['selected_class'];
+    $selected_class = $_SESSION['selected_class'];
 } else {
-$selected_class = null;
+    $selected_class = null;
 }
 
 // Обработка формы для выбора предмета, класса и темы
@@ -76,16 +76,16 @@ if(isset($_POST['subject_id']) && isset($_POST['class_id'])) {
     <input type="submit" class="btn btn-success mt-3" value="Создать тест">
 </form>
 <script>
-         let questionCounter = 1;
+    let questionCounter = 1;
 
-        function addAnswer(answersContainer) {
+    function addAnswer(answersContainer) {
         const answerIndex = answersContainer.children.length ;
         const answerInput = document.createElement('div');
 
         // Создаем поле для ввода ответа
         const answerTextInput = document.createElement('input');
         answerTextInput.type = 'text';
-        answerTextInput.name = `question-${questionCounter}-answer-${answerIndex}-text`;
+        answerTextInput.name = `question-${questionCounter-1}-answer-${answerIndex}`;
         answerTextInput.required = true;
         answerTextInput.placeholder = `Введите ответ ${answerIndex}...`;
         answerTextInput.classList.add('form-control');
@@ -94,7 +94,7 @@ if(isset($_POST['subject_id']) && isset($_POST['class_id'])) {
         // Создаем поле для ввода количества баллов за ответ
         const answerPointsInput = document.createElement('input');
         answerPointsInput.type = 'number';
-        answerPointsInput.name = `question-${questionCounter}-answer-${answerIndex}-points`;
+        answerPointsInput.name = `question-${questionCounter-1}-answer-${answerIndex}-score`;
         answerPointsInput.required = true;
         answerPointsInput.placeholder = `Введите количество баллов за ответ ${answerIndex}...`;
         answerPointsInput.classList.add('form-control');
@@ -102,67 +102,67 @@ if(isset($_POST['subject_id']) && isset($_POST['class_id'])) {
 
         answersContainer.appendChild(answerInput);
     }
-         function addQuestion() {
-             const container = document.getElementById('questions-container');
+    function addQuestion() {
+        // Увеличиваем значение questionCounter для следующего вопроса
+        questionCounter++;
+        const container = document.getElementById('questions-container');
 
-             // Создаем новую форму вопроса
-             const questionForm = document.createElement('div');
-             questionForm.classList.add('question-form');
+        // Создаем новую форму вопроса
+        const questionForm = document.createElement('div');
+        questionForm.classList.add('question-form');
 
-             // Создаем заголовок для формы вопроса
-             const questionHeader = document.createElement('h2');
-             questionHeader.textContent = `Вопрос ${questionCounter}`;
+        // Создаем заголовок для формы вопроса
+        const questionHeader = document.createElement('h2');
+        questionHeader.textContent = `Вопрос ${questionCounter-1}`;
 
-             // Создаем поле для ввода вопроса
-             const questionInput = document.createElement('input');
-             questionInput.type = 'text';
-             questionInput.name = `question-${questionCounter}`;
-             questionInput.required = true;
-             questionInput.placeholder = 'Введите вопрос...';
-             questionInput.classList.add('form-control');
+        // Создаем поле для ввода вопроса
+        const questionInput = document.createElement('input');
+        questionInput.type = 'text';
+        questionInput.name = `question-${questionCounter-1}`;
+        questionInput.required = true;
+        questionInput.placeholder = 'Введите вопрос...';
+        questionInput.classList.add('form-control');
 
-             // Добавляем поле для первого ответа
-             const firstAnswerInput = document.createElement('input');
-             firstAnswerInput.type = 'text';
-             firstAnswerInput.name = `question-${questionCounter}-answer-1`;
-             firstAnswerInput.required = true;
-             firstAnswerInput.placeholder = 'Введите первый ответ...';
-             firstAnswerInput.classList.add('form-control');
+        // Добавляем поле для первого ответа
+        const firstAnswerInput = document.createElement('input');
+        firstAnswerInput.type = 'text';
+        firstAnswerInput.name = `question-${questionCounter-1}-answer-1`;
+        firstAnswerInput.required = true;
+        firstAnswerInput.placeholder = 'Введите первый ответ...';
+        firstAnswerInput.classList.add('form-control');
 
-             // Создаем поле для ввода количества баллов за первый ответ
-             const firstAnswerPointsInput = document.createElement('input');
-             firstAnswerPointsInput.type = 'number';
-             firstAnswerPointsInput.name = `question-${questionCounter}-answer-1-points`;
-             firstAnswerPointsInput.required = true;
-             firstAnswerPointsInput.placeholder = `Введите количество баллов за ответ 1...`;
-             firstAnswerPointsInput.classList.add('form-control');
+        // Создаем поле для ввода количества баллов за первый ответ
+        const firstAnswerPointsInput = document.createElement('input');
+        firstAnswerPointsInput.type = 'number';
+        firstAnswerPointsInput.name = `question-${questionCounter-1}-answer-1-score`;
+        firstAnswerPointsInput.required = true;
+        firstAnswerPointsInput.placeholder = `Введите количество баллов за ответ 1...`;
+        firstAnswerPointsInput.classList.add('form-control');
 
-             // Создаем контейнер для ответов и добавляем в него элементы
-             const answersContainer = document.createElement('div');
-             answersContainer.classList.add('answers-container');
-             answersContainer.appendChild(firstAnswerInput);
-             answersContainer.appendChild(firstAnswerPointsInput);
-             questionForm.appendChild(questionHeader);
-             questionForm.appendChild(questionInput);
-             questionForm.appendChild(answersContainer);
+        // Создаем контейнер для ответов и добавляем в него элементы
+        const answersContainer = document.createElement('div');
+        answersContainer.classList.add('answers-container');
+        answersContainer.appendChild(firstAnswerInput);
+        answersContainer.appendChild(firstAnswerPointsInput);
+        questionForm.appendChild(questionHeader);
+        questionForm.appendChild(questionInput);
+        questionForm.appendChild(answersContainer);
 
-             // Добавляем кнопку для добавления нового поля ответа
-             const addAnswerButton = document.createElement('button');
-             addAnswerButton.type = 'button';
-             addAnswerButton.textContent = 'Добавить ответ';
-             addAnswerButton.classList.add('btn', 'btn-secondary', 'mt-2');
-             addAnswerButton.addEventListener('click', () => {
-                 addAnswer(answersContainer);
-                 questionForm.appendChild(addAnswerButton); // перемещаем кнопку вниз формы
-             });
-             questionForm.appendChild(addAnswerButton); // добавляем кнопку в конец формы
+        // Добавляем кнопку для добавления нового поля ответа
+        const addAnswerButton = document.createElement('button');
+        addAnswerButton.type = 'button';
+        addAnswerButton.textContent = 'Добавить ответ';
+        addAnswerButton.classList.add('btn', 'btn-secondary', 'mt-2');
+        addAnswerButton.addEventListener('click', () => {
+            addAnswer(answersContainer);
+            questionForm.appendChild(addAnswerButton); // перемещаем кнопку вниз формы
+        });
+        questionForm.appendChild(addAnswerButton); // добавляем кнопку в конец формы
 
-             // Добавляем форму вопроса в контейнер
-             container.appendChild(questionForm);
+        // Добавляем форму вопроса в контейнер
+        container.appendChild(questionForm);
 
-             // Увеличиваем значение questionCounter для следующего вопроса
-             questionCounter++;
-         }
+    }
 
 
 </script>

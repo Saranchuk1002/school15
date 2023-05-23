@@ -1,11 +1,7 @@
 <?php include_once 'db.php';include('templates/header.php') ?>
 <!DOCTYPE html>
 <html>
-<head>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<link rel="stylesheet" href="styles.css">
-
+<link rel="stylesheet" href="css/style.css">
 <body>
 <div class="container">
     <?php
@@ -22,6 +18,7 @@
 
         $sql = "SELECT * FROM subjects";
         $result = $db->query($sql);
+
 
         if ($result->rowCount() > 0) {
             while ($row = $result->fetch(PDO::FETCH_ASSOC)) {

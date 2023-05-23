@@ -4,9 +4,9 @@ $id = (int) $_GET['id'];
 
 $testId = $id;
 
-$res = $db->query("SELECT * FROM tests WHERE id = {$testId}");
+$res = $db->query("SELECT * FROM test_result WHERE id = {$testId}");
 $row = $res->fetch();
-$testTitle = $row['title'];
+$testTitle = $row['name'];
 
 $res = $db->query("SELECT * FROM test_result WHERE test_id = {$testId}");
 $results = $res->fetchAll();

@@ -19,44 +19,43 @@ if (!empty($name) && !empty($time) && !empty($subject_id) && !empty($class_id)) 
     // Получаем ID добавленного теста
     $test_id = $db->lastInsertId();
 
-    // Добавляем каждый вопрос в базу данных
-    foreach ($_POST as $name => $value) {
-        if (strpos($name, 'question-') === 0) {
-            // Получаем текст вопроса и баллы за него
-            $question_text = isset($_POST[$name]) ? $_POST[$name] : '';
-            $score = isset($_POST[$name . '-points']) ? $_POST[$name . '-points'] : '';
-
-            // Проверяем наличие обязательных значений
-            if (!empty($question_text) && !empty($score)) {
-                // Добавляем вопрос в базу данных
-                $query = $db->prepare("INSERT INTO questions (question_text, test_id) VALUES (?, ?)");
-                $query->execute([$question_text, $test_id]);
-
-                // Получаем ID добавленного вопроса
-                $question_id = $db->lastInsertId();
-
-                // Добавляем каждый ответ к этому вопросу в базу данных
-                foreach ($_POST as $name => $value) {
-                    if (strpos($name, 'question-') === 0 && strpos($name, '-answer-') !== false) {
-                        // Получаем текст ответа и баллы за него
-                        $answer_text = isset($_POST[$name]) ? $_POST[$name] : '';
-                        $score = isset($_POST[$name . '-points']) ? $_POST[$name . '-points'] : '';
-
-                        // Проверяем наличие обязательных значений
-                        if (!empty($answer_text) && !empty($score)) {
-                            // Добавляем ответ в базу данных
-                            $query = $db->prepare("INSERT INTO answers (question_id, answer_text, score) VALUES (?, ?, ?)");
-                            $query->execute([$question_id, $answer_text, $score]);
-                        }
-                    }
-                }
-            }
+    $questionCounter = 1;
+    while (isset($_POST['question-' . $questionCounter])) {
+        $question_text = trim($_POST['question-' . $questionCounter]);
+        if (empty($question_text)) {
+            continue;
         }
+
+        $res = $db->prepare("INSERT IGNORE INTO questions (`test_id`, `question_text`) VALUES (:test_id, :question_text)");
+        $res->execute([
+            ':test_id' => $test_id,
+            ':question_text' => $question_text,
+        ]);
+        $question_id = $db->lastInsertId();
+
+        $answerIndex = 1;
+        // Добавляем каждый ответ к этому вопросу в базу данных
+        while (isset($_POST['question-' . $questionCounter. '-answer-' . $answerIndex])) {
+            $answer_text = isset($_POST['question-' . $questionCounter . '-answer-' . $answerIndex]) ? $_POST['question-' . $questionCounter . '-answer-' . $answerIndex] : '';
+            $score = isset($_POST['question-' . $questionCounter . '-answer-' . $answerIndex . '-score']) ? $_POST['question-' . $questionCounter . '-answer-' . $answerIndex . '-score'] : '';;
+            if (empty($answer_text)) {
+                continue;
+            }
+
+            $res = $db->prepare("INSERT IGNORE INTO answers (`question_id`, `answer_text`, `score`) 
+                                VALUES (:question_id, :answer_text, :score)");
+            $res->execute([
+                ':question_id' => $question_id,
+                ':answer_text' => $answer_text,
+                ':score' => $score,
+            ]);
+
+            $answerIndex++;
+        }
+        $questionCounter++;
     }
 
-
-// Перенаправляем пользователя на страницу со списком тестов
+    // Перенаправляем пользователя на страницу со списком тестов
     header("Location: admin.php");
     exit(); // рекомендуется использовать exit() после перенаправления, чтобы код после него не выполнялся.
 }
-

@@ -1,5 +1,7 @@
 <?php
 include_once 'db.php';
+include('templates/header.php');
+
 if (isset($_GET['subject_id'])) {
     $subject_id = $_GET['subject_id'];
     $sql = "SELECT * FROM tests WHERE subject_id = $subject_id";
@@ -51,9 +53,6 @@ $tests = $query->fetchAll(PDO::FETCH_ASSOC);
         echo '<td>' . $row['time'] . '</td>';
         echo '<td>' . $row['subject_id'] . '</td>';
         echo '<td>' . $row['class_id'] . '</td>';
-        echo '<td>' . $row['question_ids'] . '</td>';
-        echo '<td>' . $row['correct_answers'] . '</td>';
-        echo '<td>' . $row['points'] . '</td>';
         echo '</tr>';
     }
 
