@@ -7,18 +7,16 @@ if (!isset($_SESSION['login_mail']) || empty($_SESSION['login_mail'])) {
     exit;
 }
 
-// получить тип пользователя из базы данных
+// Получение информации о пользователе и его классе
 $login_mail = $_SESSION['login_mail'];
 $res = $db->query("SELECT * FROM users WHERE username = '{$login_mail}'");
 $row = $res->fetch(PDO::FETCH_ASSOC);
 $user_type = $row['type'];
-// Получение информации о классе пользователя
 $userClassId = $row['class_id'];
-
 
 $classFilter = isset($_GET['class_filter']) ? $_GET['class_filter'] : $userClassId;
 
-// Проверяем выбранный фильтр класса и формируем соответствующий запрос
+// Формирование запроса в зависимости от выбранного фильтра класса
 if ($classFilter === 'all') {
     $sql = "SELECT s.* FROM subjects s";
 } else {
@@ -27,7 +25,7 @@ if ($classFilter === 'all') {
             WHERE sc.class_id = :class_id";
 }
 
-// Подготавливаем запрос и выполняем его
+// Подготовка и выполнение запроса
 $stmt = $db->prepare($sql);
 if ($classFilter !== 'all') {
     $stmt->bindParam(':class_id', $classFilter);
@@ -38,9 +36,90 @@ $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 <!DOCTYPE html>
 <html>
-<link rel="stylesheet" href="css/style.css">
+<head>
+    <title>Ваши предметы</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        body {
+            background-color: #222;
+            color: #fff;
+        }
+
+        .container {
+            margin: 20px auto;
+            max-width: 800px;
+            padding: 20px;
+            background-color: #333;
+            border-radius: 8px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        form {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        label {
+            color: #fff;
+        }
+
+        select {
+            padding: 8px 12px;
+            font-size: 16px;
+            border: none;
+            background-color: #555;
+            color: #fff;
+            border-radius: 4px;
+        }
+
+        .subject {
+            margin-bottom: 30px;
+        }
+
+        .subject-title {
+            font-size: 24px;
+            margin-bottom: 10px;
+            transition: color 0.3s ease;
+        }
+
+        .subject-title:hover {
+            color: #ffca28;
+        }
+
+        .test-list li {
+            margin-bottom: 5px;
+        }
+
+        .admin-buttons {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            margin-left: 30px;
+            font-size: 16px;
+            background-color: #ffca28;
+            color: #222;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #ffc107;
+        }
+    </style>
+</head>
 <body>
 <div class="container">
+    <h1>Ваши предметы</h1>
+
     <form action="" method="get">
         <label for="class_filter">Фильтр по классу:</label>
         <select name="class_filter" id="class_filter" onchange="this.form.submit()">
@@ -59,12 +138,14 @@ $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
             ?>
         </select>
     </form>
+
     <?php
     // Вывод предметов
     if (count($result) > 0) {
         foreach ($result as $row) {
+            echo "<div class='subject'>";
             echo "<a href='tests.php?subject_id=" . $row["id"] . "'>";
-            echo "<h2>" . $row["name"] . "</h2>";
+            echo "<h2 class='subject-title'>" . $row["name"] . "</h2>";
             echo "</a>";
 
             $sql2 = "SELECT * FROM tests WHERE subject_id = :subject_id";
@@ -72,31 +153,20 @@ $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
             $stmt2->bindParam(':subject_id', $row["id"]);
             $stmt2->execute();
             $result2 = $stmt2->fetchAll(PDO::FETCH_ASSOC);
-
-//вывод тестов
-//            if (count($result2) > 0) {
-//                echo "<ul>";
-//                foreach ($result2 as $row2) {
-//                    echo "<li><a href='test.php?id=" . $row2["id"] . "'>" . $row2["name"] . "</a></li>";
-//                }
-//                echo "</ul>";
-//            } else {
-//                echo "<p>Тесты отсутствуют.</p>";
-//            }
         }
 
+        // Отображение кнопок только для администраторов
+        if ($user_type == 'admin') {
+            echo "<div class='admin-buttons'>";
+            echo "<a href='constructor.php' class='btn btn-primary'>Добавить тест</a>";
+            echo "<a href='add_questions.php' class='btn btn-primary'>Добавить вопрос</a>";
+            echo "</div>";
+        }
     } else {
-        echo "<p>Тесты отсутствуют.</p>";
-    }
-
-    // отобразить кнопку только для администраторов
-    if ($user_type == 'admin') {
-        echo "<a href='constructor.php' class='btn btn-primary'>Добавить тест</a>";
-        echo "<a href='add_questions.php' class='btn btn-primary' style='margin-left: 10px;'>Добавить вопрос</a>";
+        echo "<p class='no-subjects'>Предметы отсутствуют.</p>";
     }
     ?>
 
 </div>
 </body>
 </html>
-

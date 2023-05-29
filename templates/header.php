@@ -3,7 +3,7 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container">
             <a class="navbar-brand" href="admin.php">
-                <img src="img/logo.png" alt="logo" width="50" height="50">
+                <img src="img/logo1.png" alt="logo" width="50" height="50">
                 Школа №15
             </a>
             <?php if (isset($_SESSION['login_mail'])): ?>
