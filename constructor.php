@@ -59,6 +59,18 @@ if(isset($_POST['subject_id']) && isset($_POST['class_id'])) {
         </select>
     </div>
     <div class="form-group">
+        <label for="type">Тип теста:</label>
+        <select name="type" id="type" required>
+            <option value="self_check">Тест для самоконтроля</option>
+            <option value="exam">Контрольный тест</option>
+        </select>
+    </div>
+
+    <div class="form-group" id="password_field" style="display: none;">
+        <label for="password">Пароль для контрольного теста:</label>
+        <input type="password" name="password" id="password" class="form-control">
+    </div>
+    <div class="form-group">
         <label for="name">Название теста:</label>
         <input type="text" name="name" id="name" class="form-control" required>
     </div>
@@ -75,6 +87,7 @@ if(isset($_POST['subject_id']) && isset($_POST['class_id'])) {
 
     <input type="submit" class="btn btn-success mt-3" value="Создать тест">
 </form>
+
 <script>
     let questionCounter = 1;
 
@@ -164,8 +177,18 @@ if(isset($_POST['subject_id']) && isset($_POST['class_id'])) {
 
     }
 
+    const testTypeSelect = document.getElementById('type');
+    const passwordField = document.getElementById('password_field');
 
+    testTypeSelect.addEventListener('change', () => {
+        if (testTypeSelect.value === 'exam') {
+            passwordField.style.display = 'block';
+        } else {
+            passwordField.style.display = 'none';
+        }
+    });
 </script>
+
 <style>
     .question-form {
         margin-bottom: 20px;
@@ -173,6 +196,7 @@ if(isset($_POST['subject_id']) && isset($_POST['class_id'])) {
         border: 1px solid #ccc;
         border-radius: 5px;
     }
+
     .question-form h2 {
         font-size: 18px;
         margin-top: 0;

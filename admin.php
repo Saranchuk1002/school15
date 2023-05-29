@@ -144,15 +144,10 @@ $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
     if (count($result) > 0) {
         foreach ($result as $row) {
             echo "<div class='subject'>";
-            echo "<a href='tests.php?subject_id=" . $row["id"] . "'>";
+            echo "<a href='#' class='subject-link' data-subject-id='" . $row["id"] . "'>"; // Открываем тег <a> с указанием data-subject-id
             echo "<h2 class='subject-title'>" . $row["name"] . "</h2>";
-            echo "</a>";
-
-            $sql2 = "SELECT * FROM tests WHERE subject_id = :subject_id";
-            $stmt2 = $db->prepare($sql2);
-            $stmt2->bindParam(':subject_id', $row["id"]);
-            $stmt2->execute();
-            $result2 = $stmt2->fetchAll(PDO::FETCH_ASSOC);
+            echo "</a>"; // Закрываем тег <a>
+            echo "</div>";
         }
 
         // Отображение кнопок только для администраторов
@@ -167,6 +162,89 @@ $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
     ?>
 
-</div>
-</body>
-</html>
+    <!-- Модальное окно -->
+    <div id="test-type-modal" class="modal">
+        <div class="modal-content">
+            <h2>Выберите тип теста</h2>
+            <button id="control-test-btn">Контрольный тест</button>
+            <button id="self-assessment-test-btn">Тест для самоконтроля</button>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // Получаем ссылки на предметы
+        var subjectLinks = document.querySelectorAll('.subject-link');
+        var modal = document.getElementById('test-type-modal');
+        var controlTestBtn = document.getElementById('control-test-btn');
+        var selfAssessmentTestBtn = document.getElementById('self-assessment-test-btn');
+
+        // Обработчик клика по ссылке на предмет
+        subjectLinks.forEach(function(link) {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                var subjectId = this.getAttribute('data-subject-id');
+                openModal(subjectId);
+            });
+        });
+
+        // Открытие модального окна и передача идентификатора предмета
+        function openModal(subjectId) {
+            modal.style.display = 'block';
+
+            // Обработчик клика по кнопке "Контрольный тест"
+            controlTestBtn.addEventListener('click', function() {
+                // Перенаправление на страницу контрольных тестов с передачей идентификатора предмета и типа теста
+                window.location.href = 'tests.php?subject_id=' + subjectId + '&test_type=exam';
+            });
+
+            // Обработчик клика по кнопке "Тест для самоконтроля"
+            selfAssessmentTestBtn.addEventListener('click', function() {
+                // Перенаправление на страницу тестов для самоконтроля с передачей идентификатора предмета и типа теста
+                window.location.href = 'tests.php?subject_id=' + subjectId + '&test_type=self_check';
+            });
+        }
+
+    </script>
+
+    <!-- CSS -->
+    <style>
+        /* Стили для модального окна */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 300px;
+            text-align: center;
+        }
+
+        .modal-content h2 {
+            margin-bottom: 20px;
+            color: #222;
+        }
+
+        .modal-content button {
+            display: block;
+            margin: 10px auto;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #ffca28;
+            color: #222;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>

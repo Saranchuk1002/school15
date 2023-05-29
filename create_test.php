@@ -10,11 +10,13 @@ $name = isset($_POST['name']) ? $_POST['name'] : '';
 $time = isset($_POST['time']) ? $_POST['time'] : '';
 $subject_id = isset($_POST['subject_id']) ? $_POST['subject_id'] : '';
 $class_id = isset($_POST['class_id']) ? $_POST['class_id'] : '';
+$type = isset($_POST['type']) ? $_POST['type'] : '';
+$password = isset($_POST['password']) ? $_POST['password'] : '';
 
-// Добавляем тест в базу данных
 if (!empty($name) && !empty($time) && !empty($subject_id) && !empty($class_id)) {
-    $query = $db->prepare("INSERT INTO tests (name, time, subject_id, class_id) VALUES (?, ?, ?, ?)");
-    $query->execute([$name, $time, $subject_id, $class_id]);
+    $query = $db->prepare("INSERT INTO tests (name, time, subject_id, class_id, type, password) 
+                          VALUES (?, ?, ?, ?, ?, ?)");
+    $query->execute([$name, $time, $subject_id, $class_id, $type, $password]);
 
     // Получаем ID добавленного теста
     $test_id = $db->lastInsertId();
