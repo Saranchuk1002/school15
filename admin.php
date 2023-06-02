@@ -37,7 +37,6 @@ $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Ваши предметы</title>
     <link rel="stylesheet" href="css/style.css">
     <style>
         body {
@@ -119,7 +118,8 @@ $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <body>
 <div class="container">
     <h1>Ваши предметы</h1>
-
+</div>
+    <div class="container">
     <form action="" method="get">
         <label for="class_filter">Фильтр по классу:</label>
         <select name="class_filter" id="class_filter" onchange="this.form.submit()">

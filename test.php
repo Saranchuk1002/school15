@@ -1,8 +1,8 @@
 <?php
 include_once 'db.php';
 include('templates/header.php');
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
+ini_set('display_errors', 0);
+ini_set('display_startup_errors', 0);
 error_reporting(E_ALL);
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
@@ -87,6 +87,7 @@ else{
         $row = $res->fetch();
         $question_text = $row['question_text'];
         $questionId = $row['id'];
+        $imagePath= $row['image_path'];
 
 
         $res = $db->query("SELECT * FROM answers WHERE question_id = {$questionId}");
@@ -191,6 +192,119 @@ if (isset($_POST['timer_hid']) && $_POST['timer_hid'] == '0') {
             color: #888;
             cursor: pointer;
         }
+        .question-image {
+            max-width: 100%;
+            height: auto;
+            margin-top: 10px;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .mt-5 {
+            margin-top: 5px;
+        }
+
+        .mt-3 {
+            margin-top: 3px;
+        }
+
+        .result-print {
+            font-size: 20px;
+            text-align: center;
+            padding: 20px;
+            border: 1px solid #ccc;
+            background-color: #f8f8f8;
+            border-radius: 5px;
+        }
+        body {
+            background-color: #222;
+            color: #fff;
+        }
+        .container {
+            margin: 20px auto;
+            max-width: 800px;
+            padding: 20px;
+            background-color: #333;
+            border-radius: 8px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        form {
+            text-align: left;
+            margin-bottom: 20px;
+            color: #222222;
+        }
+
+        label {
+            color: #fff;
+        }
+
+        select {
+            padding: 8px 12px;
+            font-size: 16px;
+            border: none;
+            background-color: #555;
+            color: #fff;
+            border-radius: 4px;
+        }
+
+
+        .test-list li {
+            margin-bottom: 5px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            margin-left: 30px;
+            font-size: 16px;
+            background-color: #ffca28;
+            color: #222;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #ffc107;
+        }
+        .timer-container {
+            background-color: #333;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .timer-input {
+            border: none;
+            text-align: center;
+            background-color: transparent;
+            color: #fefefe;
+            font-size: 25px;
+            margin-left: 0px; /* Уменьшите значение для более близкого расстояния */
+        }
+
+        .timer-label {
+            color: #fefefe;
+            font-size: 25px;
+            margin-right: 5px; /* Уменьшите значение для более близкого расстояния */
+        }
+
+        .timer-hidden {
+            background-color: #222;
+            text-align: center;
+            margin-top: 5px;
+            visibility: hidden;
+        }
     </style>
 </head>
 <body>
@@ -201,33 +315,40 @@ if (isset($_POST['timer_hid']) && $_POST['timer_hid'] == '0') {
         <div id="message"></div>
     </div>
 </div>
+<?php if ($questionNum != 1) { ?>
+    <div class="timer-container">
+        <h3>
+            <span class="timer-label">Время до окончания теста:</span>
+            <input type="text" readonly id="timer" name="timer" class="timer-input" size="1" value="<?php echo floor($_POST['timer_hid'] / 60); ?>:<?php echo $_POST['timer_hid'] % 60; ?>">
+        </h3>
+        <h3>
+            <input type="hidden" readonly id="timer_hid" name="timer_hid" class="timer-hidden" size="1" value="<?php echo $_POST['timer_hid']; ?>">
+        </h3>
+    </div>
+<?php } ?>
 
-    <?php if ($showForm){
-    ?>
-    <div class="container">
-        <div class="container">
-            <div class="question-links">
+
+<div class="container">
+    <?php if ($showForm) { ?>
+        <div class="question-links">
+            <ul class="question-nav">
+                <?php if ($questionNum != 1) { ?>
                 <h4>Номера вопросов:</h4>
-                <ul class="question-nav">
+                <?php } ?>
+                <?php for ($i = 1; $i <= $questionCount; $i++) {
+                    if ($questionNum != 1) { ?>
+                        <li><a href="javascript:void(0);" onclick="changeQuestion(<?php echo $i; ?>);"><?php echo $i; ?></a></li>
+                    <?php }
+                } ?>
+            </ul>
+        </div>
 
-                    <?php
-                    for ($i = 1; $i <= $questionCount; $i++) {
-                        if ($questionNum != 1) {
-                            echo "<li><a href='javascript:void(0);' onclick='changeQuestion({$i});'>{$i}</a></li>";
-                        }
-                    }
-                    ?>
-                </ul>
-            </div>
-            <form id="question-form" action="test.php?id=<?php echo $testId; ?>" method="post">
-                <input id="question-input" type="hidden" name="q" value="<?php echo $questionNum; ?>">
-
-                <?php $questionNum--;
-                ?>
-                <div class="row justify-content-center">
-
-                    <div class="col-md-6">
-                        <script>
+        <form id="question-form" action="test.php?id=<?php echo $testId; ?>" method="post">
+            <input id="question-input" type="hidden" name="q" value="<?php echo $questionNum; ?>">
+            <?php $questionNum--; ?>
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <script>
                             timeMinut=<?php echo $_POST['timer_hid'];?>;
                             timer = setInterval(function () {
                                 let timer_show = document.getElementById('timer');
@@ -251,83 +372,66 @@ if (isset($_POST['timer_hid']) && $_POST['timer_hid'] == '0') {
                                 }
                                 --timeMinut; // Уменьшаем таймер
                             }, 1000)
-                        </script>
-                        <div class="text-center mt-5">
-                            <p>Вопрос <?php echo $questionNum . ' из ' . $questionCount; ?></p>
-                        </div>
-
-                        <div class="card mt-3">
-                            <div class="card-header text-center" >
-                                <h3><?php echo $question_text; ?></h3>
-                            </div>
-                            <div class="card-body">
-
-                                <?php if($questionNum!==0)
-                                {
-
-                                    $max_value=0;
-                                    foreach ($answer_text AS $answer) {
-                                        $curr_answer_id=$answer['id'];
-                                        $curr_answer=$answer['answer_text'];
-                                        if($max_value<$answer['score'])
-                                        {
-                                            $max_value=$answer['score'];
-                                        }
-
-                                        echo"
-                                    <div>
-                                    <div class='radio-group' id='radio-group-" . $questionId . "'>
-                                        <input type='radio' name='answer_id' required value='";
-                                        echo"$curr_answer_id";
-                                        echo";'>";
-                                        echo"$curr_answer";
-                                        echo"
-                                    </div>";
-                                    }
-                                    $_SESSION['max_score']+=$max_value;
-                                }
-                                else{
-
-                                    echo "<input type='text' name='name' placeholder='Введите ФИО' value='$fullName' readonly required>";
-
-                                    echo "
-                                                </div>
-                                            </div>";
-                                }
-                                ?>
-                            </div>
-                        </div>
-                        <div class="text-center mt-3">
-                            <?php if ($questionCount == $questionNum) { ?>
-                                <button class="btn btn-primary" onclick="history.go(-1);">Назад </button>
-                                <button type="submit" class="btn btn-success">Получить результат</button>
-                            <?php } else { ?>
-                                <?php if ($questionNum==1) { ?>
-                                    <button class="btn btn-primary" onclick="history.go(-1);" disabled>Назад </button>
-                                    <button type="submit" class="btn btn-primary">Дальше</button>
-                                <?php } else { ?>
-                                    <button class="btn btn-primary" onclick="history.go(-1);">Назад </button>
-                                    <button type="submit" class="btn btn-primary">Дальше</button>
-                                <?php } ?>
+                    </script>
+                    <div class="text-center mt-5" style="color: #fefefe">
+                        <p>Вопрос <?php echo $questionNum . ' из ' . $questionCount; ?></p>
+                    </div>
+                    <div class="card mt-3">
+                        <div class="card-header text-center">
+                            <h3><?php echo $question_text; ?></h3>
+                            <?php if (!empty($imagePath)) { ?>
+                                <img src="<?php echo $imagePath; ?>" alt="Изображение вопроса" class="question-image">
                             <?php } ?>
-                            <?php if (($questionCount == $questionNum && $questionNum!=0) || $questionNum!=0) { ?>
-                                <h3><input type='text' readonly id="timer" name="timer" style="border:none;text-align:center;" size="20" value=" <?php echo floor($_POST['timer_hid']/60);?>:<?php echo $_POST['timer_hid']%60;?>"></h3>
-                                <h3><input type='hidden' readonly id="timer_hid" name="timer_hid" style="border:none;text-align:center;" size="20" value="<?php echo $_POST['timer_hid'];?>"></h3>
+                        </div>
+                        <div class="card-body">
+                            <?php if ($questionNum !== 0) {
+                                $max_value = 0;
+                                foreach ($answer_text as $answer) {
+                                    $curr_answer_id = $answer['id'];
+                                    $curr_answer = $answer['answer_text'];
+                                    if ($max_value < $answer['score']) {
+                                        $max_value = $answer['score'];
+                                    } ?>
+                                    <div>
+                                        <div class="radio-group" id="radio-group-<?php echo $questionId; ?>">
+                                            <input type="radio" name="answer_id" required value="<?php echo $curr_answer_id; ?>">
+                                            <?php echo $curr_answer; ?>
+                                        </div>
+                                    </div>
+                                <?php }
+                                $_SESSION['max_score'] += $max_value;
+                            } else { ?>
+                                <input type="text" name="name" placeholder="Введите ФИО" value="<?php echo $fullName; ?>" readonly required>
                             <?php } ?>
                         </div>
                     </div>
+                    <div class="text-center mt-3">
+                        <?php if ($questionCount == $questionNum) { ?>
+                            <button class="btn btn-primary" onclick="history.go(-1);">Назад</button>
+                            <button type="submit" class="btn btn-success">Получить результат</button>
+                        <?php } else { ?>
+                            <?php if ($questionNum == 1) { ?>
+                                <button class="btn btn-primary" onclick="history.go(-1);" disabled>Назад</button>
+                                <button type="submit" class="btn btn-primary">Дальше</button>
+                            <?php } else { ?>
+                                <button class="btn btn-primary" onclick="history.go(-1);">Назад</button>
+                                <button type="submit" class="btn btn-primary">Дальше</button>
+                            <?php } ?>
+                        <?php } ?>
+                    </div>
                 </div>
-            </form>
-            <?php } else { ?>
-                <div class="row justify-content-center">
-                    <div class="col-md-6">
-                        <div class="card mt-3">
-                            <div class="card-header">
-                                <h3 class="text-center">Тест пройден!</h3>
-                            </div>
-                            <div class="card-body">
-                                <div class="result-print">
-                                    <?php
+            </div>
+        </form>
+    <?php } else { ?>
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h3 class="text-center">Тест пройден!</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="result-print">
+                            <?php
                                     $_SESSION['email']= $email;
                                     $_SESSION['name']= $fullName;
                                     $_SESSION['id'] = $userId;
@@ -344,20 +448,14 @@ if (isset($_POST['timer_hid']) && $_POST['timer_hid'] == '0') {
                                         ':user_id' => $_SESSION['id'],
                                     ]);
                                     ?>
-                                    Ваш результат
-                                    <?php echo $score/$max_value*100 ;?>
-                                    % (
-                                    <?php echo $score; ?>
-                                    из
-                                    <?php echo $max_value; ?>
-                                    )
-                                </div>
-                            </div>
+                            Ваш результат <?php echo $score / $max_value * 100; ?>% (<?php echo $score; ?> из <?php echo $max_value; ?>)
                         </div>
                     </div>
                 </div>
-            <?php } ?>
+            </div>
         </div>
+    <?php } ?>
+</div>
         <script>
             function changeQuestion($questionNum) {
                 if($questionNum!=0) {

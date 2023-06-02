@@ -119,13 +119,75 @@ $classes = $resClasses->fetchAll(PDO::FETCH_ASSOC);
 
 
 ?>
+<style>
+    body {
+        background-color: #222;
+        color: #fff;
+    }
+
+    .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 20px auto;
+        max-width: 800px;
+        padding: 20px;
+        background-color: #333;
+        border-radius: 8px;
+    }
+
+    h1 {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    form {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    label {
+        color: #fff;
+    }
+
+    select {
+        padding: 8px 12px;
+        font-size: 16px;
+        border: none;
+        background-color: #555;
+        color: #fff;
+        border-radius: 4px;
+    }
+
+    .test-list li {
+        margin-bottom: 5px;
+    }
+
+
+    .btn {
+        display: inline-block;
+        padding: 10px 20px;
+        margin-left: 30px;
+        font-size: 16px;
+        background-color: #ffca28;
+        color: #222;
+        text-decoration: none;
+        border-radius: 4px;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn:hover {
+        background-color: #ffc107;
+    }
+</style>
+<div class="container">
+    <h1>Результаты тестов</h1>
+</div>
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="mt-4">
                 <div class="text-center">
                     <form action="results.php" method="POST">
-                        <div class="form-group">
+                        <div class="form-group" style=" margin-right: 450px;">
                             <label for="subject_id">Выберите предмет:</label>
                             <select name="subject_id" id="subject_id" required>
                                 <option value="all" <?php echo ($selectedSubject == 'all') ? 'selected' : ''; ?>>Все предметы</option>
@@ -135,17 +197,20 @@ $classes = $resClasses->fetchAll(PDO::FETCH_ASSOC);
                                     </option>
                                 <?php endforeach; ?>
                             </select>
-                            <div class="form-group">
-                                <label for="class_id">Выберите класс:</label>
-                                <select name="class_id" id="class_id" required>
-                                    <option value="all" <?php echo ($selectedClass == 'all') ? 'selected' : ''; ?>>Все классы</option>
-                                    <?php foreach ($classes as $class): ?>
-                                        <option value="<?php echo $class['id']; ?>" <?php echo ($selectedClass == $class['id']) ? 'selected' : ''; ?>>
-                                            <?php echo $class['class_number']; ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
+                            <div class="container" style="margin: 20px auto;">
+                                <form style="display: flex; flex-direction: row;">
+                                    <label for="class_id">Выберите класс:</label>
+                                    <select name="class_id" id="class_id" required style="margin-left: 10px;">
+                                        <option value="all" <?php echo ($selectedClass == 'all') ? 'selected' : ''; ?>>Все классы</option>
+                                        <?php foreach ($classes as $class): ?>
+                                            <option value="<?php echo $class['id']; ?>" <?php echo ($selectedClass == $class['id']) ? 'selected' : ''; ?>>
+                                                <?php echo $class['class_number']; ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </form>
                             </div>
+
                             <div class="form-group">
                                 <label for="user_id">Выберите ученика:</label>
                                 <select name="user_id" id="user_id" required class="user-select">
@@ -168,12 +233,11 @@ $classes = $resClasses->fetchAll(PDO::FETCH_ASSOC);
                                     ?>
                                 </select>
                             </div>
-
-
                             <button type="submit" class="btn btn-primary">Выбрать</button>
                     </form>
-                </div>
-                <table class="table table-bordered" style="background-color: grey">
+                </div >
+                <div class="container">
+                    <table class="table table-bordered" style="background-color: grey; margin: 0 auto; width: 100%;">
                     <tr>
                         <th>ФИО</th>
                         <th>Класс</th>
@@ -246,12 +310,8 @@ $classes = $resClasses->fetchAll(PDO::FETCH_ASSOC);
                     }
                     ?>
                 </table>
+                </div>
             </div>
-            <p>
-            <form action="delete.php" method="post">
-                <button class="btn btn-danger">Удалить тест</button>
-            </form>
-            </p>
         </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"

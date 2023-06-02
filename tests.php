@@ -1,37 +1,53 @@
 <?php
 include_once 'db.php';
 include('templates/header.php');
+?>
+<div class="container">
+    <?php
+    if (isset($_GET['subject_id'])) {
+        $subject_id = $_GET['subject_id'];
+        $test_type = isset($_GET['test_type']) ? $_GET['test_type'] : '';
 
-if (isset($_GET['subject_id'])) {
-    $subject_id = $_GET['subject_id'];
-    $test_type = isset($_GET['test_type']) ? $_GET['test_type'] : '';
+        // Вывод заголовка перед циклом while
+        if ($test_type === 'self_check') {
+            echo "<h1 style='text-align: center;'>Список тестов для самоконтроля</h1>";
+        } elseif ($test_type === 'exam') {
+            echo "<h1 style='text-align: center;'>Контрольные тесты</h1>";
+        }
+    ?>
+        </div>
+<div class="container">
+<?php
+        if ($test_type === 'exam') {
+            $sql = "SELECT * FROM tests WHERE subject_id = $subject_id AND type = 'exam'";
+        } elseif ($test_type === 'self_check') {
+            $sql = "SELECT * FROM tests WHERE subject_id = $subject_id AND type = 'self_check'";
+        } else {
+            $sql = "SELECT * FROM tests WHERE subject_id = $subject_id";
+        }
 
-    if ($test_type === 'exam') {
-        echo "<h1>Список контрольных тестов</h1>";
-        $sql = "SELECT * FROM tests WHERE subject_id = $subject_id AND type = 'exam'";
-    } elseif ($test_type === 'self_check') {
-        echo "<h1>Список тестов для самоконтроля</h1>";
-        $sql = "SELECT * FROM tests WHERE subject_id = $subject_id AND type = 'self_check'";
-    } else {
-        $sql = "SELECT * FROM tests WHERE subject_id = $subject_id";
-    }
-
-    $result = $db->query($sql);
-    if ($result->rowCount() > 0) {
-        while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
-            if ($row["type"] === "exam") {
-                echo "<li><a href='javascript:void(0);' onclick='showPasswordPrompt(" . $row["id"] . ", \"" . $row["password"] . "\")'>" . $row["name"] . "</a></li>";
-            } else {
-                echo "<li><a href='test.php?id=" . $row["id"] . "'>" . $row["name"] . "</a></li>";
+        $result = $db->query($sql);
+        if ($result->rowCount() > 0) {
+            while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+                if ($row["type"] === "exam") {
+                    echo "<div>";
+                    echo "<a class='subject-title' style='margin-right: 650px' href='javascript:void(0);' onclick='showPasswordPrompt(" . $row["id"] . ", \"" . $row["password"] . "\")'>" . $row["name"] . "</a>";
+                    echo "</div>";
+                } else {
+                    echo "<div>";
+                    echo "<a class='subject-title' style='margin-right: 650px' href='test.php?id=" . $row["id"] . "'>" . $row["name"] . "</a>";
+                    echo "</div>";
+                }
             }
+        } else {
+            echo "Тесты отсутствуют.";
         }
     } else {
-        echo "Тесты отсутствуют.";
+        echo "Предмет не выбран.";
     }
-} else {
-    echo "Предмет не выбран.";
-}
-?>
+    ?>
+</div>
+
 
 <!-- Модальное окно ввода пароля -->
 <div id="passwordModal" class="modal">
@@ -42,6 +58,21 @@ if (isset($_GET['subject_id'])) {
     </div>
 </div>
 <style>
+    body {
+        background-color: #222;
+        color: #fff;
+    }
+
+    .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 20px auto;
+        max-width: 800px;
+        padding: 20px;
+        background-color: #333;
+        border-radius: 8px;
+    }
     /* Стили для модального окна */
     .modal {
         display: none;
@@ -56,7 +87,7 @@ if (isset($_GET['subject_id'])) {
     }
 
     .modal-content {
-        background-color: #fefefe;
+        background-color: #484848;
         margin: 15% auto;
         padding: 20px;
         border: 1px solid #888;
@@ -85,6 +116,67 @@ if (isset($_GET['subject_id'])) {
 
     .modal button:hover {
         background-color: #45a049;
+    }
+    h1 {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    form {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    label {
+        color: #fff;
+    }
+
+    select {
+        padding: 8px 12px;
+        font-size: 16px;
+        border: none;
+        background-color: #555;
+        color: #fff;
+        border-radius: 4px;
+    }
+
+    .subject {
+        margin-bottom: 30px;
+    }
+
+    .subject-title {
+        font-size: 24px;
+        margin-bottom: 10px;
+        transition: color 0.3s ease;
+    }
+
+    .subject-title:hover {
+        color: #ffca28;
+    }
+
+    .test-list li {
+        margin-bottom: 5px;
+    }
+
+    .admin-buttons {
+        text-align: center;
+        margin-top: 30px;
+    }
+
+    .btn {
+        display: inline-block;
+        padding: 10px 20px;
+        margin-left: 30px;
+        font-size: 16px;
+        background-color: #ffca28;
+        color: #222;
+        text-decoration: none;
+        border-radius: 4px;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn:hover {
+        background-color: #ffc107;
     }
 </style>
 

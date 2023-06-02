@@ -13,6 +13,7 @@ $class_id = isset($_POST['class_id']) ? $_POST['class_id'] : '';
 $type = isset($_POST['type']) ? $_POST['type'] : '';
 $password = isset($_POST['password']) ? $_POST['password'] : '';
 
+
 if (!empty($name) && !empty($time) && !empty($subject_id) && !empty($class_id)) {
     $query = $db->prepare("INSERT INTO tests (name, time, subject_id, class_id, type, password) 
                           VALUES (?, ?, ?, ?, ?, ?)");
@@ -28,11 +29,23 @@ if (!empty($name) && !empty($time) && !empty($subject_id) && !empty($class_id)) 
             continue;
         }
 
-        $res = $db->prepare("INSERT IGNORE INTO questions (`test_id`, `question_text`) VALUES (:test_id, :question_text)");
+        $imagePath = '';
+        if (isset($_FILES['question-' . $questionCounter . '-image']) && $_FILES['question-' . $questionCounter . '-image']['error'] === UPLOAD_ERR_OK) {
+            $imageTmpPath = $_FILES['question-' . $questionCounter . '-image']['tmp_name'];
+            $imageFileName = $_FILES['question-' . $questionCounter . '-image']['name'];
+            $imagePath = 'img/' . $imageFileName;
+
+            // Переместите загруженный файл в желаемую директорию
+            move_uploaded_file($imageTmpPath, $imagePath);
+        }
+
+        $res = $db->prepare("INSERT IGNORE INTO questions (`test_id`, `question_text`, `image_path`) VALUES (:test_id, :question_text, :image_path)");
         $res->execute([
             ':test_id' => $test_id,
             ':question_text' => $question_text,
+            ':image_path' => $imagePath, // Путь к сохраненному изображению
         ]);
+
         $question_id = $db->lastInsertId();
 
         $answerIndex = 1;
