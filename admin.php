@@ -154,7 +154,6 @@ $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
         if ($user_type == 'admin') {
             echo "<div class='admin-buttons'>";
             echo "<a href='constructor.php' class='btn btn-primary'>Добавить тест</a>";
-            echo "<a href='add_questions.php' class='btn btn-primary'>Добавить вопрос</a>";
             echo "</div>";
         }
     } else {

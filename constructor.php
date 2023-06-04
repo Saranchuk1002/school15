@@ -75,7 +75,8 @@ if (isset($_POST['subject_id']) && isset($_POST['class_id'])) {
 
         input[type="text"],
         input[type="number"],
-        input[type="password"] {
+        input[type="password"],
+        input[type="file"] {
             display: block;
             width: 760px;
             padding: 10px;
@@ -84,13 +85,26 @@ if (isset($_POST['subject_id']) && isset($_POST['class_id'])) {
             border-radius: 4px;
             margin-top: 10px;
         }
+        input[type="file"] {
+            display: block;
+            width: 760px;
+            height: 50px;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
 
-        /*select {*/
-        /*    height: 45px;*/
-        /*    width: 300px;*/
-        /*    margin-top: 5px;*/
-        /*}*/
 
+        select {
+            padding: 8px 12px;
+            font-size: 16px;
+            border: none;
+            background-color: #555;
+            color: #fff;
+            border-radius: 4px;
+        }
         .btn {
             display: inline-block;
             padding: 10px 20px;
@@ -106,13 +120,40 @@ if (isset($_POST['subject_id']) && isset($_POST['class_id'])) {
         .btn:hover {
             background-color: #ffc107;
         }
+        .container_filtr {
+            margin: 20px 0 20px 20px;
+            max-width: 360px;
+            padding: 20px;
+            background-color: #333;
+            border-radius: 8px;
+        }
+        .answers-container {
+            border-radius: 4px;
+            padding: 10px;
+            margin-top: 10px;
+            position: relative; /* Добавляем позиционирование для псевдоэлемента */
+        }
+
+        .answers-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #ccc;
+        }
+        .inner-container {
+            margin-left: -10px; /* Пример значения, которое можно настроить */
+        }
+
     </style>
 </head>
 <body>
 <div class="container">
     <h1>Создание теста</h1>
 </div>
-    <div class="container">
+    <div class="container_filtr" style="margin-top: -115px">
     <form method="post" action="create_test.php" enctype="multipart/form-data">
         <div class="form-group">
             <label for="subject_id">Выберите предмет:</label>
@@ -145,7 +186,8 @@ if (isset($_POST['subject_id']) && isset($_POST['class_id'])) {
                 </select>
             </div>
         </div>
-
+    </div>
+<div class="container" style="margin-top: -200px">
         <div class="form-group" id="password_field" style="display: none;">
             <label for="password">Пароль для контрольного теста:</label>
             <div style="display: flex;">
@@ -167,14 +209,14 @@ if (isset($_POST['subject_id']) && isset($_POST['class_id'])) {
             </div>
         </div>
 
-        <div id="questions-container">
+        <div id="questions-container" >
             <!-- Контейнер для вопросов -->
         </div>
-
         <button type="button" class="btn btn-primary mt-3" onclick="addQuestion()">Добавить вопрос</button>
 
         <input type="submit" class="btn btn-success mt-3" value="Создать тест">
     </form>
+    </div>
 </div>
 </body>
 </html>
@@ -256,12 +298,20 @@ if (isset($_POST['subject_id']) && isset($_POST['class_id'])) {
         // Создаем контейнер для ответов и добавляем в него элементы
         const answersContainer = document.createElement('div');
         answersContainer.classList.add('answers-container');
-        answersContainer.appendChild(firstAnswerInput);
-        answersContainer.appendChild(firstAnswerPointsInput);
+
+// Создаем вложенный контейнер для элементов внутри answersContainer
+        const innerContainer = document.createElement('div');
+        innerContainer.classList.add('inner-container');
+        innerContainer.appendChild(firstAnswerInput);
+        innerContainer.appendChild(firstAnswerPointsInput);
+
+        answersContainer.appendChild(innerContainer);
+
         questionForm.appendChild(questionHeader);
         questionForm.appendChild(questionInput);
         questionForm.appendChild(imageInput);
         questionForm.appendChild(answersContainer);
+
 
 
         // Добавляем кнопку для добавления нового поля ответа
@@ -270,7 +320,7 @@ if (isset($_POST['subject_id']) && isset($_POST['class_id'])) {
         addAnswerButton.textContent = 'Добавить ответ';
         addAnswerButton.classList.add('btn', 'btn-secondary', 'mt-2');
         addAnswerButton.addEventListener('click', () => {
-            addAnswer(answersContainer);
+            addAnswer(innerContainer);
             questionForm.appendChild(addAnswerButton); // перемещаем кнопку вниз формы
         });
         questionForm.appendChild(addAnswerButton); // добавляем кнопку в конец формы

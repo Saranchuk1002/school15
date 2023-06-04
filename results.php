@@ -142,7 +142,7 @@ $classes = $resClasses->fetchAll(PDO::FETCH_ASSOC);
     }
 
     form {
-        text-align: center;
+        text-align: left;
         margin-bottom: 20px;
     }
 
@@ -167,7 +167,7 @@ $classes = $resClasses->fetchAll(PDO::FETCH_ASSOC);
     .btn {
         display: inline-block;
         padding: 10px 20px;
-        margin-left: 30px;
+        margin-left: 110px;
         font-size: 16px;
         background-color: #ffca28;
         color: #222;
@@ -179,64 +179,71 @@ $classes = $resClasses->fetchAll(PDO::FETCH_ASSOC);
     .btn:hover {
         background-color: #ffc107;
     }
+    .container_filtr {
+        margin: 20px 0 20px 20px;
+        max-width: 360px;
+        padding: 20px;
+        background-color: #333;
+        border-radius: 8px;
+    }
 </style>
 <div class="container">
     <h1>Результаты тестов</h1>
 </div>
-<div class="container">
-    <div class="row justify-content-center">
-                <div class="text-center">
-                    <form action="results.php" method="POST">
-                        <div class="form-group" style=" margin-right: 450px;">
-                            <label for="subject_id">Выберите предмет:</label>
-                            <select name="subject_id" id="subject_id" required>
-                                <option value="all" <?php echo ($selectedSubject == 'all') ? 'selected' : ''; ?>>Все предметы</option>
-                                <?php foreach($subjects as $subject): ?>
-                                    <option value="<?php echo $subject['id']; ?>" <?php echo ($selectedSubject == $subject['id']) ? 'selected' : ''; ?>>
-                                        <?php echo $subject['name']; ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
-                            <div class="container" style="margin: 20px auto;">
-                                <form style="display: flex; flex-direction: row;">
-                                    <label for="class_id">Выберите класс:</label>
-                                    <select name="class_id" id="class_id" required style="margin-left: 10px;">
-                                        <option value="all" <?php echo ($selectedClass == 'all') ? 'selected' : ''; ?>>Все классы</option>
-                                        <?php foreach ($classes as $class): ?>
-                                            <option value="<?php echo $class['id']; ?>" <?php echo ($selectedClass == $class['id']) ? 'selected' : ''; ?>>
-                                                <?php echo $class['class_number']; ?>
-                                            </option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                </form>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="user_id">Выберите ученика:</label>
-                                <select name="user_id" id="user_id" required class="user-select">
-                                    <?php
-                                    if ($selectedClass !== null && $selectedClass !== 'all') {
-                                        // Запрос к базе данных для получения списка учеников выбранного класса
-                                        $usersQuery = $db->prepare("SELECT * FROM users WHERE class_id = ?");
-                                        $usersQuery->execute([$selectedClass]);
-                                        $users = $usersQuery->fetchAll(PDO::FETCH_ASSOC);
-                                    } else {
-                                        // Получить всех учеников
-                                        $usersQuery = $db->prepare("SELECT * FROM users");
-                                        $usersQuery->execute();
-                                        $users = $usersQuery->fetchAll(PDO::FETCH_ASSOC);
-                                    }
-                                    foreach ($users as $user) {
-                                        $selected = ($user['id'] == $selectedStudent) ? 'selected' : ''; // Проверяем, соответствует ли текущий ученик переменной $selectedStudent
-                                        echo "<option value=\"" . $user['id'] . "\" $selected>" . $user['full_name'] . "</option>";
-                                    }
-                                    ?>
-                                </select>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Выбрать</button>
-                    </form>
-                </div >
-                <div class="container">
+<div class="container_filtr" style="margin-top: -138px">
+    <div class="row ">
+        <div class="col-md-6 text-left">
+            <form action="results.php" method="POST">
+                <div class="form-group">
+                    <label for="subject_id">Выберите предмет:</label>
+                    <select name="subject_id" id="subject_id" required>
+                        <option value="all" <?php echo ($selectedSubject == 'all') ? 'selected' : ''; ?>>Все предметы</option>
+                        <?php foreach($subjects as $subject): ?>
+                            <option value="<?php echo $subject['id']; ?>" <?php echo ($selectedSubject == $subject['id']) ? 'selected' : ''; ?>>
+                                <?php echo $subject['name']; ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="class_id">Выберите класс:</label>
+                    <select name="class_id" id="class_id" required>
+                        <option value="all" <?php echo ($selectedClass == 'all') ? 'selected' : ''; ?>>Все классы</option>
+                        <?php foreach ($classes as $class): ?>
+                            <option value="<?php echo $class['id']; ?>" <?php echo ($selectedClass == $class['id']) ? 'selected' : ''; ?>>
+                                <?php echo $class['class_number']; ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="user_id">Выберите ученика:</label>
+                    <select name="user_id" id="user_id" required class="user-select">
+                        <?php
+                        if ($selectedClass !== null && $selectedClass !== 'all') {
+                            // Запрос к базе данных для получения списка учеников выбранного класса
+                            $usersQuery = $db->prepare("SELECT * FROM users WHERE class_id = ?");
+                            $usersQuery->execute([$selectedClass]);
+                            $users = $usersQuery->fetchAll(PDO::FETCH_ASSOC);
+                        } else {
+                            // Получить всех учеников
+                            $usersQuery = $db->prepare("SELECT * FROM users");
+                            $usersQuery->execute();
+                            $users = $usersQuery->fetchAll(PDO::FETCH_ASSOC);
+                        }
+                        foreach ($users as $user) {
+                            $selected = ($user['id'] == $selectedStudent) ? 'selected' : ''; // Проверяем, соответствует ли текущий ученик переменной $selectedStudent
+                            echo "<option value=\"" . $user['id'] . "\" $selected>" . $user['full_name'] . "</option>";
+                        }
+                        ?>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Выбрать</button>
+            </form>
+        </div>
+    </div>
+</div>
+                <div class="container" style="margin-top: -250px">
                     <table class="table table-bordered" style="background-color: grey; margin: 0 auto; width: 100%;">
                     <tr>
                         <th>ФИО</th>

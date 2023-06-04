@@ -217,6 +217,7 @@ if (isset($_POST['timer_hid']) && $_POST['timer_hid'] == '0') {
             border: 1px solid #ccc;
             background-color: #f8f8f8;
             border-radius: 5px;
+            color: #222222;
         }
         body {
             background-color: #222;
@@ -224,7 +225,7 @@ if (isset($_POST['timer_hid']) && $_POST['timer_hid'] == '0') {
         }
         .container {
             margin: 20px auto;
-            max-width: 800px;
+            max-width: 1600px;
             padding: 20px;
             background-color: #333;
             border-radius: 8px;
@@ -282,6 +283,7 @@ if (isset($_POST['timer_hid']) && $_POST['timer_hid'] == '0') {
             display: flex;
             align-items: center;
             justify-content: center;
+            margin-top: auto;
         }
 
         .timer-input {
@@ -305,6 +307,38 @@ if (isset($_POST['timer_hid']) && $_POST['timer_hid'] == '0') {
             margin-top: 5px;
             visibility: hidden;
         }
+        .card-body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-body > div {
+            margin-bottom: 10px;
+        }
+
+        .radio-group {
+            display: flex;
+            align-items: center;
+        }
+
+        .radio-group input[type="radio"] {
+            margin-right: 10px;
+        }
+
+        .radio-group label {
+            margin-bottom: 0;
+        }
+
+        input[type="text"] {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-top: 10px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -315,19 +349,6 @@ if (isset($_POST['timer_hid']) && $_POST['timer_hid'] == '0') {
         <div id="message"></div>
     </div>
 </div>
-<?php if ($questionNum != 1) { ?>
-    <div class="timer-container">
-        <h3>
-            <span class="timer-label">Время до окончания теста:</span>
-            <input type="text" readonly id="timer" name="timer" class="timer-input" size="1" value="<?php echo floor($_POST['timer_hid'] / 60); ?>:<?php echo $_POST['timer_hid'] % 60; ?>">
-        </h3>
-        <h3>
-            <input type="hidden" readonly id="timer_hid" name="timer_hid" class="timer-hidden" size="1" value="<?php echo $_POST['timer_hid']; ?>">
-        </h3>
-    </div>
-<?php } ?>
-
-
 <div class="container">
     <?php if ($showForm) { ?>
         <div class="question-links">
@@ -342,37 +363,11 @@ if (isset($_POST['timer_hid']) && $_POST['timer_hid'] == '0') {
                 } ?>
             </ul>
         </div>
-
         <form id="question-form" action="test.php?id=<?php echo $testId; ?>" method="post">
             <input id="question-input" type="hidden" name="q" value="<?php echo $questionNum; ?>">
             <?php $questionNum--; ?>
             <div class="row justify-content-center">
                 <div class="col-md-6">
-                    <script>
-                            timeMinut=<?php echo $_POST['timer_hid'];?>;
-                            timer = setInterval(function () {
-                                let timer_show = document.getElementById('timer');
-                                let timer_hid = document.getElementById('timer_hid');
-                                seconds = timeMinut%60 // Получаем секунды
-                                minutes = timeMinut/60%60 // Получаем минуты
-                                // Условие если время закончилось то...
-                                if (timeMinut <= 0) {
-                                    // Таймер удаляется
-                                    timer_show.value="Время вышло!";
-                                    timer_hid.value=0;
-                                    clearInterval(timer);
-
-                                    // Выводит сообщение что время закончилось
-                                } else { // Иначе
-                                    // Создаём строку с выводом времени
-                                    let strTimer = `${Math.trunc(minutes)}:${seconds}`;
-                                    // Выводим строку в блок для показа таймера
-                                    timer_show.value=" "+strTimer;
-                                    timer_hid.value=timeMinut;
-                                }
-                                --timeMinut; // Уменьшаем таймер
-                            }, 1000)
-                    </script>
                     <div class="text-center mt-5" style="color: #fefefe">
                         <p>Вопрос <?php echo $questionNum . ' из ' . $questionCount; ?></p>
                     </div>
@@ -409,25 +404,59 @@ if (isset($_POST['timer_hid']) && $_POST['timer_hid'] == '0') {
                         <?php if ($questionCount == $questionNum) { ?>
                             <button class="btn btn-primary" onclick="history.go(-1);">Назад</button>
                             <button type="submit" class="btn btn-success">Получить результат</button>
-                        <?php } else { ?>
-                            <?php if ($questionNum == 1) { ?>
+                            <?php } else if ($questionNum==1 || $questionNum==0 ){ ?>
                                 <button class="btn btn-primary" onclick="history.go(-1);" disabled>Назад</button>
                                 <button type="submit" class="btn btn-primary">Дальше</button>
-                            <?php } else { ?>
+                            <?php } else if($questionNum!=0){ ?>
                                 <button class="btn btn-primary" onclick="history.go(-1);">Назад</button>
                                 <button type="submit" class="btn btn-primary">Дальше</button>
                             <?php } ?>
-                        <?php } ?>
+                            <?php if ($questionNum != 0 || ($questionCount == $questionNum && $questionNum != 0)) { ?>
+                                <div class="timer-container">
+                                    <h3>
+                                        <span class="timer-label">Время до окончания теста:</span>
+                                        <input type="text" readonly id="timer" name="timer" class="timer-input" size="1" value="<?php echo floor($_POST['timer_hid'] / 60); ?>:<?php echo $_POST['timer_hid'] % 60; ?>">
+                                    </h3>
+                                    <h3>
+                                        <input type="hidden" readonly id="timer_hid" name="timer_hid" class="timer-hidden" size="1" value="<?php echo $_POST['timer_hid']; ?>">
+                                    </h3>
+                                    <script>
+                                        timeMinut = <?php echo $_POST['timer_hid']; ?>;
+                                        timer = setInterval(function () {
+                                            let timer_show = document.getElementById('timer');
+                                            let timer_hid = document.getElementById('timer_hid');
+                                            seconds = timeMinut % 60; // Получаем секунды
+                                            minutes = timeMinut / 60 % 60; // Получаем минуты
+                                            // Условие если время закончилось то...
+                                            if (timeMinut <= 0) {
+                                                // Таймер удаляется
+                                                timer_show.value = "Время вышло!";
+                                                timer_hid.value = 0;
+                                                clearInterval(timer);
+
+                                                // Выводит сообщение что время закончилось
+                                            } else { // Иначе
+                                                // Создаём строку с выводом времени
+                                                let strTimer = `${Math.trunc(minutes)}:${seconds}`;
+                                                // Выводим строку в блок для показа таймера
+                                                timer_show.value = " " + strTimer;
+                                                timer_hid.value = timeMinut;
+                                            }
+                                            --timeMinut; // Уменьшаем таймер
+                                        }, 1000)
+                                    </script>
+                                </div>
+                            <?php } ?>
                     </div>
                 </div>
             </div>
         </form>
-    <?php } else { ?>
+<?php } else { ?>
         <div class="row justify-content-center">
             <div class="col-md-6">
                 <div class="card mt-3">
                     <div class="card-header">
-                        <h3 class="text-center">Тест пройден!</h3>
+                        <h3 class="text-center" style="color: #222222">Тест пройден!</h3>
                     </div>
                     <div class="card-body">
                         <div class="result-print">

@@ -16,7 +16,7 @@ include('templates/header.php');
         }
     ?>
         </div>
-<div class="container">
+<div class="container_test">
 <?php
         if ($test_type === 'exam') {
             $sql = "SELECT * FROM tests WHERE subject_id = $subject_id AND type = 'exam'";
@@ -30,13 +30,9 @@ include('templates/header.php');
         if ($result->rowCount() > 0) {
             while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
                 if ($row["type"] === "exam") {
-                    echo "<div>";
-                    echo "<a class='subject-title' style='margin-right: 650px' href='javascript:void(0);' onclick='showPasswordPrompt(" . $row["id"] . ", \"" . $row["password"] . "\")'>" . $row["name"] . "</a>";
-                    echo "</div>";
+                    echo "<a class='subject-title' href='javascript:void(0);' onclick='showPasswordPrompt(" . $row["id"] . ", \"" . $row["password"] . "\")'>" . $row["name"] . "</a>";
                 } else {
-                    echo "<div>";
-                    echo "<a class='subject-title' style='margin-right: 650px' href='test.php?id=" . $row["id"] . "'>" . $row["name"] . "</a>";
-                    echo "</div>";
+                    echo "<a class='subject-title' href='test.php?id=" . $row["id"] . "'>" . $row["name"] . "</a>";
                 }
             }
         } else {
@@ -72,6 +68,16 @@ include('templates/header.php');
         padding: 20px;
         background-color: #333;
         border-radius: 8px;
+    }
+    .container_test {
+        margin: 20px auto;
+        max-width: 800px;
+        padding: 20px;
+        background-color: #333;
+        border-radius: 8px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
     }
     /* Стили для модального окна */
     .modal {

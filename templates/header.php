@@ -2,7 +2,7 @@
 <header>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container">
-            <a class="navbar-brand" href="admin.php">
+            <a class="navbar-brand" style="color: #fefefe " href="admin.php">
                 <img src="img/logo1.png" alt="logo" width="50" height="50">
                 Школа №15
             </a>

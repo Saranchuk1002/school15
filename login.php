@@ -48,7 +48,7 @@ if ($_SESSION['login_mail'] != '') {
     <div class="row justify-content-center mt-5">
         <div class="col-md-4">
             <div class="card">
-                <div class="card-header text-center">
+                <div class="card-header text-center" style="color: #222222">
                     <h3>Авторизация</h3>
                 </div>
                 <div class="card-body">
@@ -74,6 +74,77 @@ if ($_SESSION['login_mail'] != '') {
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<style>
+    body {
+        background-color: #222;
+        color: #fff;
+    }
+
+    .container {
+        margin: 20px auto;
+        max-width: 800px;
+        padding: 20px;
+        background-color: #333;
+        border-radius: 8px;
+    }
+
+    h1 {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    form {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    label {
+        color: #fff;
+    }
+
+    select {
+        padding: 8px 12px;
+        font-size: 16px;
+        border: none;
+        background-color: #555;
+        color: #fff;
+        border-radius: 4px;
+    }
+
+    .subject {
+        margin-bottom: 30px;
+    }
+
+    .subject-title {
+        font-size: 24px;
+        margin-bottom: 10px;
+        transition: color 0.3s ease;
+    }
+
+    .subject-title:hover {
+        color: #ffca28;
+    }
+
+    .test-list li {
+        margin-bottom: 5px;
+    }
+
+
+    .btn {
+        display: inline-block;
+        padding: 10px 20px;
+        font-size: 16px;
+        background-color: #ffca28;
+        color: #222;
+        text-decoration: none;
+        border-radius: 4px;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn:hover {
+        background-color: #ffc107;
+    }
+</style>
 </body>
 </html>
 
