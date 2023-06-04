@@ -10,6 +10,9 @@
 <?php
 include_once 'db.php';
 include('templates/header.php');
+require 'vendor/autoload.php';
+require 'vendor/autoload.php';
+
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
@@ -187,9 +190,11 @@ $classes = $resClasses->fetchAll(PDO::FETCH_ASSOC);
         border-radius: 8px;
     }
 </style>
+
 <div class="container">
     <h1>Результаты тестов</h1>
 </div>
+<button id="exportButton" class="btn btn-primary" style="margin-left: 1120px; margin-bottom: 10px">Экспортировать в Excel</button>
 <div class="container_filtr" style="margin-top: -138px">
     <div class="row ">
         <div class="col-md-6 text-left">
@@ -321,6 +326,44 @@ $classes = $resClasses->fetchAll(PDO::FETCH_ASSOC);
             </div>
         </div>
 </div>
+<script src="https://unpkg.com/xlsx-populate/browser/xlsx-populate.min.js"></script>
+<script>
+    document.getElementById('exportButton').addEventListener('click', function() {
+        // Создание новой рабочей книги Excel
+        var workbook = XlsxPopulate.fromBlankAsync().then(function(workbook) {
+            // Получение таблицы результатов
+            var table = document.querySelector('.table');
+
+            // Перебор строк таблицы
+            for (var i = 0; i < table.rows.length; i++) {
+                var row = table.rows[i];
+                // Перебор ячеек в строке
+                for (var j = 0; j < row.cells.length; j++) {
+                    var cell = row.cells[j];
+                    // Запись значения ячейки в соответствующую ячейку в Excel
+                    workbook.sheet(0).cell(i + 1, j + 1).value(cell.innerText);
+                }
+            }
+
+            // Сохранение книги в формате Excel
+            workbook.outputAsync().then(function(blob) {
+                var url = URL.createObjectURL(blob);
+
+                // Создание ссылки для скачивания файла
+                var a = document.createElement('a');
+                a.href = url;
+                a.download = 'результаты.xlsx';
+                a.click();
+
+                // Очистка временного URL
+                URL.revokeObjectURL(url);
+            });
+        });
+    });
+</script>
+
+
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
         crossorigin="anonymous"></script>
